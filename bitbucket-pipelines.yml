@@ -1,0 +1,59 @@
+# REQUIRED REPOSITORY VARIABLES IN BITBUCKET:
+# - DOCKER_HUB_USERNAME
+# - DOCKER_HUB_PASSWORD
+# - DOCKER_HUB_FRONTEND_REPO
+# - DOCKER_HUB_API_REPO
+
+# REQUIRED DEPLOYMENT VARIABLES IN BITBUCKET:
+# -
+# - KUBE_CLUSTER
+# - KUBE_SERVER
+# - KUBE_TOKEN
+# - KUBE_CA
+# - KUBE_FRONTEND_DEPLOYMENT_NAME
+# - KUBE_API_DEPLOYMENT_NAME
+# - KUBE_USERNAME
+# - (optional) KUBE_CRONJOBS_LIST (comma separated list of cronjobs to update)
+
+image: atlassian/default-image:2
+
+pipelines:
+  branches:
+    master:
+    - step:
+        services:
+        - docker
+        script:
+        - export DOCKER_BUILDKIT=1
+        - export FINAL_FRONTEND_IMAGE=$DOCKER_HUB_FRONTEND_REPO:$BITBUCKET_BUILD_NUMBER
+        - export FINAL_API_IMAGE=$DOCKER_HUB_API_REPO:$BITBUCKET_BUILD_NUMBER
+        - docker login --username $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD
+        - docker build --target frontend --tag $FINAL_FRONTEND_IMAGE .
+        - docker build --target api --tag $FINAL_API_IMAGE .
+        - docker push $FINAL_FRONTEND_IMAGE
+        - docker push $FINAL_API_IMAGE
+
+    # - step:
+    #     name: SonarQube analysis
+    #     script:
+    #     - pipe: sonarsource/sonarcloud-scan:1.4.0
+    #       variables:
+    #         SONAR_HOST_URL: $SONAR_HOST_URL
+    #         SONAR_TOKEN: $SONAR_TOKEN
+    #     caches:
+    #     - sonar
+
+    - step:
+        name: Deployment dev
+        deployment: dev
+        trigger: manual
+        image: atlassian/pipelines-kubectl
+        script:
+        - ./deploy.sh
+
+definitions:
+  services:
+    docker:
+      memory: 3072
+      # caches:
+      #   sonar: ~/.sonar

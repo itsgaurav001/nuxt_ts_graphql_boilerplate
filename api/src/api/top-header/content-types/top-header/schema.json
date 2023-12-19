@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "top_headers",
+  "info": {
+    "singularName": "top-header",
+    "pluralName": "top-headers",
+    "displayName": "TopHeader",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "logoTitle": {
+      "type": "string"
+    },
+    "logoSubtitle": {
+      "type": "string"
+    },
+    "leftLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "nav.item"
+    }
+  }
+}

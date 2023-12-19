@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_single_images",
+  "info": {
+    "displayName": "single-image",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
